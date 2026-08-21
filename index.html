@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Elite Building</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+*{
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    margin:0;
+    background:#f8f8f8;
+    color:#222;
+}
+
+
+/* HERO */
+
+.hero{
+
+    height:100vh;
+    background:
+    linear-gradient(
+    rgba(0,0,0,.55),
+    rgba(0,0,0,.55)
+    ),
+    url("building.jpg");
+
+    background-size:cover;
+    background-position:center;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:white;
+
+}
+
+
+.hero h1{
+
+    font-size:65px;
+    margin:0;
+
+}
+
+
+.hero p{
+
+    font-size:22px;
+    max-width:700px;
+
+}
+
+
+.btn{
+
+    display:inline-block;
+    margin-top:25px;
+    padding:15px 35px;
+    background:#d89b2b;
+    color:white;
+    text-decoration:none;
+    border-radius:5px;
+
+}
+
+
+
+/* SECTIONS */
+
+section{
+
+    padding:70px 10%;
+
+}
+
+
+.title{
+
+    text-align:center;
+    font-size:40px;
+    margin-bottom:40px;
+
+}
+
+
+/* SERVICES */
+
+.services{
+
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:30px;
+
+}
+
+
+.card{
+
+    background:white;
+    padding:35px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+}
+
+
+.card h3{
+
+    font-size:25px;
+
+}
+
+
+
+/* ABOUT */
+
+.about{
+
+    background:#111;
+    color:white;
+    text-align:center;
+
+}
+
+
+.about p{
+
+    max-width:800px;
+    margin:auto;
+    line-height:1.7;
+
+}
+
+
+/* PROJECTS */
+
+.projects{
+
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:25px;
+
+}
+
+
+.project{
+
+    height:250px;
+    background:#ddd;
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+
+}
+
+
+
+/* FOOTER */
+
+footer{
+
+    background:#000;
+    color:white;
+    text-align:center;
+    padding:30px;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="hero">
+
+<div>
+
+<h1>
+Elite Building
+</h1>
+
+<p>
+Creating modern spaces through quality construction,
+innovative designs, and reliable building solutions.
+</p>
+
+
+<a class="btn" href="#">
+Start Your Project
+</a>
+
+
+</div>
+
+</div>
+
+
+
+
+<section>
+
+<h2 class="title">
+Our Services
+</h2>
+
+
+<div class="services">
+
+
+<div class="card">
+
+<h3>
+🏢 Construction
+</h3>
+
+<p>
+Residential and commercial buildings built with precision.
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+🏠 Architecture
+</h3>
+
+<p>
+Modern designs that combine beauty and functionality.
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+🔨 Renovation
+</h3>
+
+<p>
+Transforming existing spaces into modern environments.
+</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>
+📐 Consultation
+</h3>
+
+<p>
+Professional planning and project management.
+</p>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+<section class="about">
+
+<h2 class="title">
+About Elite Building
+</h2>
+
+<p>
+
+Elite Building delivers high-quality construction solutions
+for individuals, businesses, and organizations.
+We focus on strong foundations, modern designs,
+and projects built to last.
+
+</p>
+
+</section>
+
+
+
+
+<section>
+
+<h2 class="title">
+Featured Projects
+</h2>
+
+
+<div class="projects">
+
+
+<div class="project">
+Modern Homes
+</div>
+
+
+<div class="project">
+Office Buildings
+</div>
+
+
+<div class="project">
+Commercial Spaces
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+<footer>
+
+Elite Building © 2026
+
+<br>
+
+Building Excellence. Creating Futures.
+
+</footer>
+
+
+</body>
+</html>
