@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>Elite WorkDesk</title>
+<style>
+:root{
+  --bg:#f4f6f9;--surface:#fff;--surface2:#f8fafc;--text:#172033;--muted:#697386;
+  --border:#e5e7eb;--primary:#4f46e5;--primary2:#6366f1;--success:#059669;
+  --warning:#d97706;--danger:#dc2626;--shadow:0 10px 30px rgba(15,23,42,.07);
+}
+[data-theme="dark"]{
+  --bg:#0b1120;--surface:#111827;--surface2:#182235;--text:#f3f4f6;--muted:#9ca3af;
+  --border:#263247;--shadow:0 10px 30px rgba(0,0,0,.2);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;background:var(--surface);border-right:1px solid var(--border);padding:22px 14px;position:fixed;inset:0 auto 0 0;z-index:20}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 10px 25px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#06b6d4);color:white;display:grid;place-items:center;font-weight:800}
+.brand strong{display:block;font-size:15px}.brand small{color:var(--muted)}
+.nav{display:grid;gap:5px}.nav button{border:0;background:none;color:var(--muted);text-align:left;padding:12px 13px;border-radius:10px;display:flex;gap:11px;align-items:center}
+.nav button.active,.nav button:hover{background:rgba(79,70,229,.1);color:var(--primary)}
+.sidebar-bottom{position:absolute;bottom:18px;left:14px;right:14px}
+.main{margin-left:245px;flex:1;min-width:0}
+.topbar{height:70px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}
+.topbar h1{font-size:20px;margin:0}.top-actions{display:flex;gap:8px}
+.content{padding:28px;max-width:1450px;margin:auto}
+.page{display:none}.page.active{display:block}
+.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.stat{display:flex;justify-content:space-between;align-items:flex-start}.stat .icon{width:42px;height:42px;border-radius:12px;background:rgba(79,70,229,.1);display:grid;place-items:center}
+.stat small{color:var(--muted)}.stat h2{margin:7px 0 0;font-size:25px}
+.two{grid-template-columns:1.4fr 1fr;margin-top:18px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.section-head h2{font-size:16px;margin:0}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px 13px;border-radius:9px;font-weight:600}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.danger{color:var(--danger)}.btn.small{padding:7px 9px;font-size:12px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--border);font-size:13px}.table th{color:var(--muted);font-weight:600}
+.badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:700}.badge.active{background:#dbeafe;color:#1d4ed8}.badge.completed{background:#d1fae5;color:#047857}.badge.pending{background:#fef3c7;color:#a16207}.badge.paid{background:#d1fae5;color:#047857}.badge.overdue{background:#fee2e2;color:#b91c1c}.badge.draft{background:#e5e7eb;color:#4b5563}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700;color:var(--muted)}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface2);color:var(--text);outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}.modal-box{background:var(--surface);width:min(850px,100%);max-height:92vh;overflow:auto;border-radius:18px;padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{margin:0;font-size:19px}.x{border:0;background:none;font-size:24px;color:var(--muted)}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.invoice-lines{display:grid;gap:8px}.line{display:grid;grid-template-columns:1.8fr .65fr .85fr 40px;gap:8px}.line input{padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text)}
+.invoice-total{margin-left:auto;width:min(300px,100%);display:grid;gap:8px;margin-top:15px}.total-row{display:flex;justify-content:space-between}.total-row.final{font-size:18px;font-weight:800;border-top:1px solid var(--border);padding-top:10px}
+.toolbar{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-bottom:15px}.search{max-width:330px;width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text)}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}
+.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.setting-card h3{margin-top:0;font-size:15px}
+.mobile-menu{display:none;border:0;background:none;font-size:23px;color:var(--text)}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.25s;z-index:100}.toast.show{transform:translateY(0);opacity:1}
+.kpi{display:flex;gap:10px;align-items:center}.kpi-bar{height:8px;border-radius:20px;background:var(--border);overflow:hidden;margin-top:9px}.kpi-bar span{display:block;height:100%;background:var(--primary)}
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.settings-grid{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:translateX(0);box-shadow:20px 0 50px rgba(0,0,0,.15)}
+ .main{margin-left:0}.topbar{padding:0 15px}.mobile-menu{display:block}.content{padding:17px 13px}.topbar h1{font-size:17px}.stats{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.toolbar{align-items:stretch;flex-direction:column}.search{max-width:none}.line{grid-template-columns:1fr 70px 90px 38px}.line input:first-child{grid-column:1/-1}
+}
+@media(max-width:420px){.stats{grid-template-columns:1fr}.top-actions .btn:not(.primary){display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="logo">ER</div><div><strong>Elite WorkDesk</strong><small>Business Manager</small></div></div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+    <button data-page="projects">▣ <span>Projects</span></button>
+    <button data-page="invoices">▤ <span>Invoices</span></button>
+    <button data-page="work">✓ <span>Work Tracker</span></button>
+    <button data-page="clients">♙ <span>Clients</span></button>
+    <button data-page="settings">⚙ <span>Settings</span></button>
+  </nav>
+  <div class="sidebar-bottom"><button class="btn" style="width:100%" onclick="backupData()">↥ Backup Data</button></div>
+</aside>
+
+<main class="main">
+<header class="topbar"><div style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" onclick="toggleMenu()">☰</button><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button class="btn" onclick="toggleTheme()">◐</button><button class="btn primary" onclick="openProject()">+ New Project</button></div></header>
+<div class="content">
+
+<section class="page active" id="dashboard">
+ <div class="grid stats">
+  <div class="card stat"><div><small>Total Projects</small><h2 id="sProjects">0</h2></div><div class="icon">▣</div></div>
+  <div class="card stat"><div><small>Active Projects</small><h2 id="sActive">0</h2></div><div class="icon">◉</div></div>
+  <div class="card stat"><div><small>Total Invoiced</small><h2 id="sInvoiced">UGX 0</h2></div><div class="icon">▤</div></div>
+  <div class="card stat"><div><small>Outstanding</small><h2 id="sOutstanding">UGX 0</h2></div><div class="icon">!</div></div>
+ </div>
+ <div class="grid two">
+  <div class="card"><div class="section-head"><h2>Recent Projects</h2><button class="btn small" onclick="showPage('projects')">View all</button></div><div id="recentProjects"></div></div>
+  <div class="card"><div class="section-head"><h2>Invoice Overview</h2><button class="btn small" onclick="showPage('invoices')">Invoices</button></div><div id="invoiceOverview"></div></div>
+ </div>
+ <div class="card" style="margin-top:18px"><div class="section-head"><h2>Business Snapshot</h2></div><div id="snapshot"></div></div>
+</section>
+
+<section class="page" id="projects">
+ <div class="toolbar"><input class="search" id="projectSearch" placeholder="Search projects..." oninput="renderProjects()"><button class="btn primary" onclick="openProject()">+ New Project</button></div>
+ <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Project</th><th>Client</th><th>Status</th><th>Deadline</th><th>Budget</th><th>Actions</th></tr></thead><tbody id="projectsTable"></tbody></table></div></div>
+</section>
+
+<section class="page" id="invoices">
+ <div class="toolbar"><input class="search" id="invoiceSearch" placeholder="Search invoices..." oninput="renderInvoices()"><button class="btn primary" onclick="openInvoice()">+ New Invoice</button></div>
+ <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Invoice</th><th>Client</th><th>Date</th><th>Due</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="invoicesTable"></tbody></table></div></div>
+</section>
+
+<section class="page" id="work">
+ <div class="toolbar"><div><strong>Work Tracker</strong><div style="color:var(--muted);font-size:12px">Record completed work and payments.</div></div><button class="btn primary" onclick="openWork()">+ Log Work</button></div>
+ <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Date</th><th>Project</th><th>Task / Work</th><th>Hours</th><th>Value</th><th>Actions</th></tr></thead><tbody id="workTable"></tbody></table></div></div>
+</section>
+
+<section class="page" id="clients">
+ <div class="toolbar"><input class="search" id="clientSearch" placeholder="Search clients..." oninput="renderClients()"><button class="btn primary" onclick="openClient()">+ New Client</button></div>
+ <div class="grid" id="clientCards" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr))"></div>
+</section>
+
+<section class="page" id="settings">
+ <div class="settings-grid">
+  <div class="card setting-card"><h3>Company Information</h3><div class="form-grid">
+   <div class="field"><label>Company Name</label><input id="setCompany"></div><div class="field"><label>Email</label><input id="setEmail"></div>
+   <div class="field"><label>Phone</label><input id="setPhone"></div><div class="field"><label>Currency</label><select id="setCurrency"><option>UGX</option><option>USD</option><option>EUR</option><option>GBP</option></select></div>
+   <div class="field full"><label>Address</label><input id="setAddress"></div><div class="field full"><label>Invoice Notes / Payment Terms</label><textarea id="setTerms"></textarea></div>
+  </div><button class="btn primary" style="margin-top:15px" onclick="saveSettings()">Save Settings</button></div>
+  <div class="card setting-card"><h3>Data Management</h3><p style="color:var(--muted);font-size:13px">Everything is stored locally in this browser. Export a backup before changing devices.</p><div class="actions"><button class="btn" onclick="backupData()">Export Backup</button><button class="btn" onclick="document.getElementById('restoreInput').click()">Import Backup</button><button class="btn danger" onclick="clearAllData()">Delete All Data</button></div><input id="restoreInput" type="file" accept=".json" hidden onchange="restoreData(event)"></div>
+ </div>
+</section>
+
+</div></main></div>
+
+<!-- PROJECT MODAL -->
+<div class="modal" id="projectModal"><div class="modal-box"><div class="modal-head"><h2 id="projectModalTitle">New Project</h2><button class="x" onclick="closeModal('projectModal')">×</button></div>
+<form onsubmit="saveProject(event)"><input type="hidden" id="projectId"><div class="form-grid">
+<div class="field"><label>Project Name *</label><input id="pName" required></div><div class="field"><label>Client</label><input id="pClient"></div>
+<div class="field"><label>Status</label><select id="pStatus"><option>Active</option><option>Pending</option><option>Completed</option><option>On Hold</option></select></div>
+<div class="field"><label>Deadline</label><input id="pDeadline" type="date"></div><div class="field"><label>Budget</label><input id="pBudget" type="number" min="0" step="0.01"></div>
+<div class="field"><label>Category</label><input id="pCategory" placeholder="Website, App, Software..."></div><div class="field full"><label>Description</label><textarea id="pDescription"></textarea></div><div class="field full"><label>Notes</label><textarea id="pNotes"></textarea></div>
+</div><div class="modal-footer"><button type="button" class="btn" onclick="closeModal('projectModal')">Cancel</button><button class="btn primary">Save Project</button></div></form>
+</div></div>
+
+<!-- INVOICE MODAL -->
+<div class="modal" id="invoiceModal"><div class="modal-box"><div class="modal-head"><h2 id="invoiceModalTitle">New Invoice</h2><button class="x" onclick="closeModal('invoiceModal')">×</button></div>
+<form onsubmit="saveInvoice(event)"><input type="hidden" id="invoiceId"><div class="form-grid">
+<div class="field"><label>Invoice Number *</label><input id="iNumber" required></div><div class="field"><label>Client *</label><input id="iClient" required></div>
+<div class="field"><label>Issue Date</label><input id="iDate" type="date"></div><div class="field"><label>Due Date</label><input id="iDue" type="date"></div>
+<div class="field"><label>Status</label><select id="iStatus"><option>Draft</option><option>Pending</option><option>Paid</option><option>Overdue</option></select></div>
+<div class="field"><label>Project</label><select id="iProject"><option value="">No project</option></select></div>
+<div class="field full"><label>Line Items</label><div class="invoice-lines" id="invoiceLines"></div><button type="button" class="btn small" style="margin-top:8px" onclick="addInvoiceLine()">+ Add Item</button></div>
+</div>
+<div class="invoice-total"><div class="total-row"><span>Subtotal</span><strong id="iSubtotal">UGX 0</strong></div><div class="total-row"><span>Tax (%)</span><input id="iTax" type="number" value="0" min="0" step="0.01" style="width:80px;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text)" oninput="calcInvoice()"></div><div class="total-row"><span>Discount</span><input id="iDiscount" type="number" value="0" min="0" step="0.01" style="width:100px;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text)" oninput="calcInvoice()"></div><div class="total-row final"><span>Total</span><strong id="iTotal">UGX 0</strong></div></div>
+<div class="field" style="margin-top:14px"><label>Notes</label><textarea id="iNotes"></textarea></div>
+<div class="modal-footer"><button type="button" class="btn" onclick="closeModal('invoiceModal')">Cancel</button><button class="btn primary">Save Invoice</button></div></form>
+</div></div>
+
+<!-- WORK MODAL -->
+<div class="modal" id="workModal"><div class="modal-box"><div class="modal-head"><h2>Log Work</h2><button class="x" onclick="closeModal('workModal')">×</button></div><form onsubmit="saveWork(event)"><input type="hidden" id="wId"><div class="form-grid"><div class="field"><label>Date</label><input id="wDate" type="date"></div><div class="field"><label>Project</label><select id="wProject"></select></div><div class="field full"><label>Task / Work *</label><input id="wTask" required></div><div class="field"><label>Hours</label><input id="wHours" type="number" min="0" step=".25"></div><div class="field"><label>Value</label><input id="wValue" type="number" min="0" step=".01"></div></div><div class="modal-footer"><button type="button" class="btn" onclick="closeModal('workModal')">Cancel</button><button class="btn primary">Save Work</button></div></form></div></div>
+
+<!-- CLIENT MODAL -->
+<div class="modal" id="clientModal"><div class="modal-box"><div class="modal-head"><h2>New Client</h2><button class="x" onclick="closeModal('clientModal')">×</button></div><form onsubmit="saveClient(event)"><input type="hidden" id="cId"><div class="form-grid"><div class="field"><label>Name *</label><input id="cName" required></div><div class="field"><label>Company</label><input id="cCompany"></div><div class="field"><label>Email</label><input id="cEmail" type="email"></div><div class="field"><label>Phone</label><input id="cPhone"></div><div class="field full"><label>Notes</label><textarea id="cNotes"></textarea></div></div><div class="modal-footer"><button type="button" class="btn" onclick="closeModal('clientModal')">Cancel</button><button class="btn primary">Save Client</button></div></form></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY="elite_workdesk_v1";
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||{
+ projects:[],invoices:[],work:[],clients:[],
+ settings:{company:"Elite Robust Ontology",email:"eliterobustontology@gmail.com",phone:"",currency:"UGX",address:"Mbale, Uganda",terms:"Payment is due by the invoice due date. Thank you for your business."},
+ theme:"light"
+};
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function money(n){return new Intl.NumberFormat(undefined,{style:"currency",currency:db.settings.currency,maximumFractionDigits:2}).format(Number(n)||0)}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toast(t){$("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
+function toggleMenu(){$("sidebar").classList.toggle("open")}
+function showPage(page){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
+ $(page).classList.add("active");
+ $("pageTitle").textContent=page==="work"?"Work Tracker":page[0].toUpperCase()+page.slice(1);
+ $("sidebar").classList.remove("open");
+ renderAll();
+}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function toggleTheme(){db.theme=db.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=db.theme;save()}
+function closeModal(id){$(id).classList.remove("show")}
+window.onclick=e=>{if(e.target.classList.contains("modal"))e.target.classList.remove("show")};
+
+function renderAll(){renderDashboard();renderProjects();renderInvoices();renderWork();renderClients();loadSettings()}
+function renderDashboard(){
+ const ps=db.projects, ins=db.invoices;
+ $("sProjects").textContent=ps.length;$("sActive").textContent=ps.filter(p=>p.status==="Active").length;
+ $("sInvoiced").textContent=money(ins.reduce((a,i)=>a+i.total,0));
+ $("sOutstanding").textContent=money(ins.filter(i=>i.status!=="Paid").reduce((a,i)=>a+i.total,0));
+ $("recentProjects").innerHTML=ps.slice().reverse().slice(0,6).map(p=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px"><div><strong>${esc(p.name)}</strong><div style="font-size:12px;color:var(--muted)">${esc(p.client||"No client")}</div></div><span class="badge ${p.status.toLowerCase().replace(" ","")}">${esc(p.status)}</span></div>`).join("")||'<div class="empty">No projects yet.</div>';
+ const total=ins.reduce((a,i)=>a+i.total,0),paid=ins.filter(i=>i.status==="Paid").reduce((a,i)=>a+i.total,0);
+ $("invoiceOverview").innerHTML=`<div class="kpi"><div style="flex:1"><div style="display:flex;justify-content:space-between"><span>Paid</span><strong>${money(paid)}</strong></div><div class="kpi-bar"><span style="width:${total?Math.min(100,paid/total*100):0}%"></span></div></div></div><div style="margin-top:18px;color:var(--muted);font-size:13px">${ins.length} invoice(s) • ${ins.filter(i=>i.status!=="Paid").length} outstanding</div>`;
+ const completed=ps.filter(p=>p.status==="Completed").length, hours=db.work.reduce((a,w)=>a+(Number(w.hours)||0),0), earned=db.work.reduce((a,w)=>a+(Number(w.value)||0),0);
+ $("snapshot").innerHTML=`<div class="grid" style="grid-template-columns:repeat(3,1fr)"><div><small style="color:var(--muted)">Completed Projects</small><h2>${completed}</h2></div><div><small style="color:var(--muted)">Hours Logged</small><h2>${hours}</h2></div><div><small style="color:var(--muted)">Work Value</small><h2>${money(earned)}</h2></div></div>`;
+}
+function renderProjects(){
+ const q=($("projectSearch")?.value||"").toLowerCase();let arr=db.projects.filter(p=>(p.name+" "+p.client+" "+p.category).toLowerCase().includes(q));
+ $("projectsTable").innerHTML=arr.map(p=>`<tr><td><strong>${esc(p.name)}</strong><div style="color:var(--muted);font-size:11px">${esc(p.category||"")}</div></td><td>${esc(p.client||"—")}</td><td><span class="badge ${p.status.toLowerCase().replace(" ","")}">${esc(p.status)}</span></td><td>${p.deadline||"—"}</td><td>${money(p.budget)}</td><td><div class="actions"><button class="btn small" onclick="openProject('${p.id}')">Edit</button><button class="btn small" onclick="deleteProject('${p.id}')">Delete</button></div></td></tr>`).join("")||'<tr><td colspan="6" class="empty">No projects found.</td></tr>';
+}
+function openProject(id){
+ const p=db.projects.find(x=>x.id===id)||{};$("projectModalTitle").textContent=id?"Edit Project":"New Project";$("projectId").value=id||"";
+ $("pName").value=p.name||"";$("pClient").value=p.client||"";$("pStatus").value=p.status||"Active";$("pDeadline").value=p.deadline||"";$("pBudget").value=p.budget||"";$("pCategory").value=p.category||"";$("pDescription").value=p.description||"";$("pNotes").value=p.notes||"";
+ $("projectModal").classList.add("show");
+}
+function saveProject(e){e.preventDefault();const id=$("projectId").value;const p={id:id||uid(),name:$("pName").value,client:$("pClient").value,status:$("pStatus").value,deadline:$("pDeadline").value,budget:Number($("pBudget").value)||0,category:$("pCategory").value,description:$("pDescription").value,notes:$("pNotes").value};
+ const i=db.projects.findIndex(x=>x.id===id);if(i>=0)db.projects[i]=p;else db.projects.push(p);closeModal("projectModal");save();toast("Project saved")}
+function deleteProject(id){if(confirm("Delete this project?")){db.projects=db.projects.filter(p=>p.id!==id);save();toast("Project deleted")}}
+
+function invoiceProjectOptions(selected=""){$("iProject").innerHTML='<option value="">No project</option>'+db.projects.map(p=>`<option value="${p.id}" ${p.id===selected?"selected":""}>${esc(p.name)}</option>`).join("")}
+function openInvoice(id){
+ const i=db.invoices.find(x=>x.id===id)||{};$("invoiceModalTitle").textContent=id?"Edit Invoice":"New Invoice";$("invoiceId").value=id||"";
+ $("iNumber").value=i.number||"INV-"+String(db.invoices.length+1).padStart(4,"0");$("iClient").value=i.client||"";$("iDate").value=i.date||today();$("iDue").value=i.due||"";$("iStatus").value=i.status||"Draft";invoiceProjectOptions(i.projectId||"");$("iTax").value=i.tax||0;$("iDiscount").value=i.discount||0;$("iNotes").value=i.notes||"";
+ $("invoiceLines").innerHTML="";(i.items?.length?i.items:[{desc:"",qty:1,price:0}]).forEach(x=>addInvoiceLine(x));calcInvoice();$("invoiceModal").classList.add("show");
+}
+function addInvoiceLine(x={desc:"",qty:1,price:0}){const d=document.createElement("div");d.className="line";d.innerHTML=`<input class="ldesc" placeholder="Description" value="${esc(x.desc)}"><input class="lqty" type="number" min="0" step=".01" value="${x.qty}"><input class="lprice" type="number" min="0" step=".01" value="${x.price}"><button type="button" class="btn small" onclick="this.parentElement.remove();calcInvoice()">×</button>`;$("invoiceLines").appendChild(d);d.querySelectorAll("input").forEach(a=>a.oninput=calcInvoice)}
+function calcInvoice(){let sub=0;document.querySelectorAll("#invoiceLines .line").forEach(l=>sub+=(Number(l.querySelector(".lqty").value)||0)*(Number(l.querySelector(".lprice").value)||0));let tax=sub*(Number($("iTax").value)||0)/100,dis=Number($("iDiscount").value)||0;$("iSubtotal").textContent=money(sub);$("iTotal").textContent=money(Math.max(0,sub+tax-dis));return{sub,tax,total:Math.max(0,sub+tax-dis),discount:dis}}
+function saveInvoice(e){e.preventDefault();const c=calcInvoice(),id=$("invoiceId").value,items=[...document.querySelectorAll("#invoiceLines .line")].map(l=>({desc:l.querySelector(".ldesc").value,qty:Number(l.querySelector(".lqty").value)||0,price:Number(l.querySelector(".lprice").value)||0})).filter(x=>x.desc||x.price);
+ const i={id:id||uid(),number:$("iNumber").value,client:$("iClient").value,date:$("iDate").value,due:$("iDue").value,status:$("iStatus").value,projectId:$("iProject").value,items,subtotal:c.sub,tax:Number($("iTax").value)||0,discount:c.discount,total:c.total,notes:$("iNotes").value};
+ const ix=db.invoices.findIndex(x=>x.id===id);if(ix>=0)db.invoices[ix]=i;else db.invoices.push(i);closeModal("invoiceModal");save();toast("Invoice saved")}
+function renderInvoices(){
+ const q=($("invoiceSearch")?.value||"").toLowerCase();let arr=db.invoices.filter(i=>(i.number+" "+i.client).toLowerCase().includes(q));
+ $("invoicesTable").innerHTML=arr.map(i=>`<tr><td><strong>${esc(i.number)}</strong></td><td>${esc(i.client)}</td><td>${i.date||"—"}</td><td>${i.due||"—"}</td><td>${money(i.total)}</td><td><span class="badge ${i.status.toLowerCase()}">${esc(i.status)}</span></td><td><div class="actions"><button class="btn small" onclick="openInvoice('${i.id}')">Edit</button><button class="btn small" onclick="printInvoice('${i.id}')">PDF</button><button class="btn small" onclick="deleteInvoice('${i.id}')">Delete</button></div></td></tr>`).join("")||'<tr><td colspan="7" class="empty">No invoices found.</td></tr>';
+}
+function deleteInvoice(id){if(confirm("Delete this invoice?")){db.invoices=db.invoices.filter(i=>i.id!==id);save();toast("Invoice deleted")}}
+
+function projectSelect(id=""){return '<option value="">No project</option>'+db.projects.map(p=>`<option value="${p.id}" ${p.id===id?"selected":""}>${esc(p.name)}</option>`).join("")}
+function openWork(id){const w=db.work.find(x=>x.id===id)||{};$("wId").value=id||"";$("wDate").value=w.date||today();$("wProject").innerHTML=projectSelect(w.projectId);$("wTask").value=w.task||"";$("wHours").value=w.hours||"";$("wValue").value=w.value||"";$("workModal").classList.add("show")}
+function saveWork(e){e.preventDefault();const id=$("wId").value,w={id:id||uid(),date:$("wDate").value,projectId:$("wProject").value,task:$("wTask").value,hours:Number($("wHours").value)||0,value:Number($("wValue").value)||0};const ix=db.work.findIndex(x=>x.id===id);if(ix>=0)db.work[ix]=w;else db.work.push(w);closeModal("workModal");save();toast("Work saved")}
+function renderWork(){$("workTable").innerHTML=db.work.slice().reverse().map(w=>{let p=db.projects.find(x=>x.id===w.projectId);return `<tr><td>${w.date}</td><td>${esc(p?.name||"—")}</td><td>${esc(w.task)}</td><td>${w.hours}</td><td>${money(w.value)}</td><td><div class="actions"><button class="btn small" onclick="openWork('${w.id}')">Edit</button><button class="btn small" onclick="deleteWork('${w.id}')">Delete</button></div></td></tr>`}).join("")||'<tr><td colspan="6" class="empty">No work logged yet.</td></tr>'}
+function deleteWork(id){if(confirm("Delete this work entry?")){db.work=db.work.filter(x=>x.id!==id);save();toast("Work deleted")}}
+
+function openClient(id){const c=db.clients.find(x=>x.id===id)||{};$("cId").value=id||"";$("cName").value=c.name||"";$("cCompany").value=c.company||"";$("cEmail").value=c.email||"";$("cPhone").value=c.phone||"";$("cNotes").value=c.notes||"";$("clientModal").classList.add("show")}
+function saveClient(e){e.preventDefault();const id=$("cId").value,c={id:id||uid(),name:$("cName").value,company:$("cCompany").value,email:$("cEmail").value,phone:$("cPhone").value,notes:$("cNotes").value};const ix=db.clients.findIndex(x=>x.id===id);if(ix>=0)db.clients[ix]=c;else db.clients.push(c);closeModal("clientModal");save();toast("Client saved")}
+function renderClients(){const q=($("clientSearch")?.value||"").toLowerCase();let arr=db.clients.filter(c=>(c.name+" "+c.company+" "+c.email).toLowerCase().includes(q));$("clientCards").innerHTML=arr.map(c=>`<div class="card"><div style="display:flex;justify-content:space-between"><div><strong>${esc(c.name)}</strong><div style="color:var(--muted);font-size:12px">${esc(c.company||"")}</div></div><span>♙</span></div><div style="margin-top:15px;color:var(--muted);font-size:13px">${esc(c.email||"")}<br>${esc(c.phone||"")}</div><div class="actions" style="margin-top:15px"><button class="btn small" onclick="openClient('${c.id}')">Edit</button><button class="btn small" onclick="deleteClient('${c.id}')">Delete</button></div></div>`).join("")||'<div class="card empty">No clients yet.</div>'}
+function deleteClient(id){if(confirm("Delete this client?")){db.clients=db.clients.filter(x=>x.id!==id);save();toast("Client deleted")}}
+
+function loadSettings(){$("setCompany").value=db.settings.company;$("setEmail").value=db.settings.email;$("setPhone").value=db.settings.phone;$("setCurrency").value=db.settings.currency;$("setAddress").value=db.settings.address;$("setTerms").value=db.settings.terms}
+function saveSettings(){db.settings={company:$("setCompany").value,email:$("setEmail").value,phone:$("setPhone").value,currency:$("setCurrency").value,address:$("setAddress").value,terms:$("setTerms").value};save();toast("Settings saved")}
+
+function backupData(){const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="elite-workdesk-backup-"+today()+".json";a.click();URL.revokeObjectURL(a.href)}
+function restoreData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.projects||!x.invoices)throw 0;if(confirm("Replace current data with this backup?")){db=x;localStorage.setItem(KEY,JSON.stringify(db));document.documentElement.dataset.theme=db.theme||"light";renderAll();toast("Backup restored")}}catch{alert("Invalid backup file.")}};r.readAsText(f)}
+function clearAllData(){if(confirm("This will permanently delete all local projects, invoices, work and clients. Continue?")){localStorage.removeItem(KEY);location.reload()}}
+
+function invoiceHTML(i){
+ const s=db.settings,items=i.items||[];
+ return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(i.number)}</title><style>
+ body{font-family:Arial,sans-serif;color:#172033;margin:0;background:#eee}.sheet{width:210mm;min-height:297mm;background:white;margin:15px auto;padding:18mm;box-sizing:border-box}header{display:flex;justify-content:space-between;border-bottom:3px solid #4f46e5;padding-bottom:20px}h1{margin:0;color:#4f46e5}h2{font-size:18px;margin:0 0 8px}.muted{color:#667085;font-size:12px}.meta{text-align:right}.box{margin-top:30px;display:flex;justify-content:space-between}.table{width:100%;border-collapse:collapse;margin-top:30px}.table th,.table td{padding:10px;border-bottom:1px solid #ddd;text-align:left;font-size:13px}.table th{background:#f4f6f9}.num{text-align:right!important}.totals{width:280px;margin-left:auto;margin-top:18px}.row{display:flex;justify-content:space-between;padding:7px}.final{font-weight:bold;font-size:17px;border-top:2px solid #172033;margin-top:5px;padding-top:12px}.notes{margin-top:40px;padding-top:15px;border-top:1px solid #ddd;font-size:12px}@media print{body{background:#fff}.sheet{margin:0;width:auto;min-height:auto;padding:12mm;box-shadow:none}}</style></head><body><div class="sheet">
+<header><div><h1>${esc(s.company)}</h1><div class="muted">${esc(s.address)}<br>${esc(s.email)} ${s.phone?"• "+esc(s.phone):""}</div></div><div class="meta"><h2>INVOICE</h2><strong>${esc(i.number)}</strong><div class="muted">Issued: ${i.date||"—"}<br>Due: ${i.due||"—"}<br>Status: ${esc(i.status)}</div></div></header>
+<div class="box"><div><div class="muted">BILL TO</div><strong>${esc(i.client)}</strong><br>${i.projectId?esc(db.projects.find(p=>p.id===i.projectId)?.name||""):""}</div></div>
+<table class="table"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Amount</th></tr></thead><tbody>${items.map(x=>`<tr><td>${esc(x.desc)}</td><td class="num">${x.qty}</td><td class="num">${money(x.price)}</td><td class="num">${money(x.qty*x.price)}</td></tr>`).join("")}</tbody></table>
+<div class="totals"><div class="row"><span>Subtotal</span><strong>${money(i.subtotal)}</strong></div><div class="row"><span>Tax (${i.tax||0}%)</span><strong>${money(i.subtotal*(Number(i.tax)||0)/100)}</strong></div><div class="row"><span>Discount</span><strong>-${money(i.discount)}</strong></div><div class="row final"><span>Total</span><strong>${money(i.total)}</strong></div></div>
+<div class="notes"><strong>Notes / Terms</strong><p>${esc(i.notes||s.terms).replace(/\n/g,"<br>")}</p></div></div></body></html>`;
+}
+function printInvoice(id){const i=db.invoices.find(x=>x.id===id);if(!i)return;const w=window.open("","_blank");w.document.write(invoiceHTML(i));w.document.close();setTimeout(()=>w.print(),400)}
+function printProject(id){const p=db.projects.find(x=>x.id===id);if(!p)return;const w=window.open("","_blank");w.document.write(`<html><head><title>${esc(p.name)}</title><style>body{font-family:Arial;padding:40px;color:#172033}h1{color:#4f46e5}section{padding:15px 0;border-bottom:1px solid #ddd}.muted{color:#667085}</style></head><body><h1>${esc(db.settings.company)}</h1><h2>${esc(p.name)}</h2><section><b>Client:</b> ${esc(p.client||"—")}<br><b>Status:</b> ${esc(p.status)}<br><b>Deadline:</b> ${p.deadline||"—"}<br><b>Budget:</b> ${money(p.budget)}</section><section><b>Description</b><p>${esc(p.description||"—").replace(/\n/g,"<br>")}</p></section><section><b>Notes</b><p>${esc(p.notes||"—").replace(/\n/g,"<br>")}</p></section></body></html>`);w.document.close();setTimeout(()=>w.print(),300)}
+
+document.documentElement.dataset.theme=db.theme||"light";renderAll();
+</script>
+</body>
+</html>
